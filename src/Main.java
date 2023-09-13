@@ -9,7 +9,8 @@ public class Main {
       System.out.println("== 프로그램 시작 ==");
 
       Scanner sc = new Scanner(System.in);
-      int lastArticleId = 0;
+      int lastArticleId = 0; //글 번호
+      
 
       ArrayList<Article> articles = new ArrayList<>();
 //      ArrayList<String> articleListTitle = new ArrayList<>();
@@ -43,14 +44,12 @@ public class Main {
 
          } else if (command.equals("article write")) {
             int id = lastArticleId + 1;
+            int view = 0;
             System.out.printf("제목 : ");
             String title = sc.nextLine();
             System.out.printf("내용 : ");
             String body = sc.nextLine();
-            
-            //날짜만 데꼬오면 됨! 그럼 완성이야!!
-//            LocalDateTime deteTime=LocalDateTime.now();
-//            DateTimeFormatter formatter =DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+         
          // 현재 날짜 구하기
             LocalDate now = LocalDate.now();
      
@@ -60,7 +59,7 @@ public class Main {
             // 포맷 적용
             String formatedNow = now.format(formatter);
             
-            Article article = new Article(id, title, body, formatedNow);
+            Article article = new Article(id, title, body, formatedNow, view);
             
             articles.add(article);
             
@@ -70,6 +69,11 @@ public class Main {
             
             
          } else if(command.startsWith("article detail")){ //detail일 때
+        	 //2.조회수 기능은 클릭되었을때 즉 detail을 입력하면 증가하고 증가한게 보여야 함.
+        	 //조회수가 보이게도 해야하고 클릭했을때 그 변수가 증가해야겠네. 0으로 생성은 글 쓰고 저장할때 되야겠다.
+        	 //그럼 같이 객체로 넣는게 낫겠다.
+        	 //조회수 변수명 : views
+        	 
         	 String[] str= command.split(" "); 
              String num =str[2];
              int id =Integer.parseInt(num);
@@ -80,10 +84,12 @@ public class Main {
             	Article article = articles.get(i);
             		if(article.id == id) {
             			found = true;
+            			article.view++;
                         System.out.printf("번호 : %d\n", article.id );
                         System.out.printf("날짜 : %s\n", article.formatedNow); 
                         System.out.printf("제목 : %s\n", article.title);
                         System.out.printf("내용 : %s\n", article.body);
+                        System.out.printf("조회수 : %d\n", article.view);
                         break;
 
             		}
@@ -104,11 +110,7 @@ public class Main {
              	Article article = articles.get(i);
              		if(article.id == id) {
              			found = true;
-             			//remove에서 문제군!!
-//             			어떤 문제인가! : article id로 지우면 java.lang.IndexOutOfBoundsException이 발생.
-//             			그렇다고 무조건 인덱스로는 못해. 왜냐하면 1,2번글 쓰고 둘다 지우고 3번 글을 쓰면 얘가 인덱스 1이거든. 
-//             			그럼 우선 id로 유무를 확인하고 나서 그 article.id의 인덱스 위치를 확인하는게 가능하면 그걸 지울수 있겠네! try!
-//             			1. 일단 if에서 맞은 id의 i값(인덱스)가 출력되는 코드 만들기
+             			
              			articles.remove(i);
              			
                     	System.out.printf("%d번 게시글이 없어졌습니다.\n",id);
@@ -120,7 +122,41 @@ public class Main {
              if (found == false) {
             	 System.out.printf("%d번 게시물은 없어\n", id);
              }
+           
+         }else if(command.startsWith("article modify")){// 1. article modify로 명령문 : 게시글 수정
+//        	 게시글 수정은 몇번 글인지 선택을 해야하니 detail/ delete랑 비슷
+        	 String[] str= command.split(" "); 
+             String num =str[2];
+             int id =Integer.parseInt(num);
+             //여기까지 modify 뒤의 번호를 id라는 변수에 저장한것
+             boolean found = false; //일단 못찾았을때
              
+             for(int i=0; i<articles.size(); i++) { // 순회
+             	Article article = articles.get(i); 
+             		if(article.id == id) { // 찾으려는 게시물 있는 경우
+             			found = true; //있으니까 true로 변경
+             			//새로 받을 제목이랑 내용
+             			System.out.printf("제목 : "); 
+                        String title = sc.nextLine();
+                        System.out.printf("내용 : ");
+                        String body = sc.nextLine();
+                     
+                        //여기서 부터 수정되야겠네
+                        //아이디가 맞는 걸 찾았으니 그 인덱스에 들어있는 title이랑 body에 담긴걸 새로 입력한 title과 body로 변경하면 되는거잖아.
+                        article.title = title;
+                        article.body = body;
+                        
+                        System.out.printf("%d번글이 수정되었습니다.\n", id);
+                        
+                         break;
+
+             		}
+             		
+        		}
+             if (found == false) {
+            	 System.out.printf("%d번 게시물은 없어\n", id);
+             }
+        	 
          }else {
             System.out.println("존재하지 않는 명령어입니다");
             continue;
@@ -135,12 +171,14 @@ public class Main {
 }
 
 class Article{
+	int view;
 	String formatedNow;
     int id;
     String title;
     String body;
    
-   Article(int id, String title, String body, String formatedNow){
+   Article(int id, String title, String body, String formatedNow, int view){
+	  this.view = view;
       this.id = id;
       this.title = title;
       this.body = body;
