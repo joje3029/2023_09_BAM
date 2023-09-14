@@ -35,10 +35,10 @@ public class Main {
         		if (articles.size() == 0) {
 					System.out.println("게시글이 없습니다");
 				} else {
-					System.out.println("번호   /    제목   ");
+					System.out.println("번호   /    제목   /   조회 ");
 					for (int i = articles.size() - 1; i >= 0; i--) {
 						Article article = articles.get(i);
-						System.out.printf(" %d     /   %s  \n", article.id, article.title);
+						System.out.printf(" %d     /   %s  /  %d\n", article.id, article.title, article.view);
 					}
 				}
 
@@ -98,30 +98,34 @@ public class Main {
             if (found == false) {
 				System.out.printf("%d번 게시물은 없어\n", id);
 			}
+            //우영쌤이 과제로 낸 코드
+         } else if (command.startsWith("article delete")) {
 
-      
-         }else if(command.startsWith("article delete")) { //delete 삭제일때
-        	 String[] str= command.split(" "); 
-             String num =str[2];
-             int id =Integer.parseInt(num);
-             boolean found = false;
-             
-             for(int i=0; i<articles.size(); i++) {
-             	Article article = articles.get(i);
-             		if(article.id == id) {
-             			found = true;
-             			
-             			articles.remove(i);
-             			
-                    	System.out.printf("%d번 게시글이 없어졌습니다.\n",id);
-                         break;
+				String[] commandDiv = command.split(" "); // article delete 1
 
-             		}
-             		
-        		}
-             if (found == false) {
-            	 System.out.printf("%d번 게시물은 없어\n", id);
-             }
+				int id = Integer.parseInt(commandDiv[2]); // 숫자 끊어서 id에 저장
+
+				boolean found = false; // boolean타입 found를 f로 지정
+				Article foundArticle = null; // article 타입의 foundArticle 을 null로 선언
+				int i =0;
+				for (i = 0; i < articles.size(); i++) { // articles를 순회함 
+					Article article = articles.get(i);	// 하나씩 꺼
+					if (article.id == id) { // 하나씩 꺼낸 article의 id와 위에서 id로 저장한 숫자가 같으면
+						found = true; //found가 true로
+						foundArticle = article; //foundAticle의 값이 id가 같은 article로 변경
+						break;
+					}
+				}
+
+				if (foundArticle == null) {
+					System.out.printf("%d번 게시물은 없어\n", id);
+					continue;
+				}
+
+				articles.remove(i); //여기를 고침 기존 id에서 순회했을때 인덱스를 기준으로 삭제하게
+				
+				System.out.println(id + "번 글을 삭제했어");
+
            
          }else if(command.startsWith("article modify")){// 1. article modify로 명령문 : 게시글 수정
 //        	 게시글 수정은 몇번 글인지 선택을 해야하니 detail/ delete랑 비슷
