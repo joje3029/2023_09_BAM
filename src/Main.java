@@ -4,14 +4,12 @@ import java.util.Scanner;
 
 public class Main {
 	static List<Article> articles = new ArrayList<Article>();
-	static Article article;
+
 	public static void main(String[] args) {
 
 		System.out.println("== 프로그램 시작 ==");
 
 		makeTestData();
-		fordata(); // 순회하면서 게시글 찾는 부분 중복 제거
-//		for( get()) : list, detail, delete, modify
 
 		Scanner sc = new Scanner(System.in);
 		int lastArticleId = 3;
@@ -35,12 +33,10 @@ public class Main {
 					System.out.println("게시글이 없습니다");
 				} else {
 					System.out.println("번호      /    제목     /    조회   ");
-					fordata();
-//					for (int i = articles.size() - 1; i >= 0; i--) {
-//						Article article = articles.get(i);
-//						System.out.printf(" %4d     /   %5s    /      %4d  \n", article.id, article.title, article.hit);
-//					}
-					System.out.printf(" %4d     /   %5s    /      %4d  \n", article.id, article.title, article.hit);
+					for (int i = articles.size() - 1; i >= 0; i--) {
+						Article article = articles.get(i);
+						System.out.printf(" %4d     /   %5s    /      %4d  \n", article.id, article.title, article.hit);
+					}
 				}
 
 			} else if (command.equals("article write")) {
@@ -51,27 +47,18 @@ public class Main {
 				System.out.printf("내용 : ");
 				String body = sc.nextLine();
 
-				article = new Article(id, regDate, regDate, title, body);
+				Article article = new Article(id, regDate, regDate, title, body);
 				articles.add(article);
 
 				System.out.printf("%d번글이 생성되었습니다.\n", id);
 				lastArticleId++;
 			} else if (command.startsWith("article detail")) {
 
-				String[] commandDiv = command.split(" "); 
+				String[] commandDiv = command.split(" "); // article detail 1
 
 				int id = Integer.parseInt(commandDiv[2]);
 
-				Article foundArticle = null;
-				
-				fordata();
-//				for (int i = 0; i < articles.size(); i++) {
-//					Article article = articles.get(i);
-					if (article.id == id) {
-						foundArticle = article;
-//						break;
-//					}
-				}
+				Article foundArticle = getArticleById(id);
 
 				if (foundArticle == null) {
 					System.out.printf("%d번 게시물은 없어\n", id);
@@ -93,16 +80,7 @@ public class Main {
 
 				int id = Integer.parseInt(commandDiv[2]);
 
-				Article foundArticle = null;
-
-				fordata();
-//				for (int i = 0; i < articles.size(); i++) {
-//					Article article = articles.get(i);
-					if (article.id == id) {
-						foundArticle = article;
-//						break;
-//					}
-				}
+				Article foundArticle = getArticleById(id);
 
 				if (foundArticle == null) {
 					System.out.printf("%d번 게시물은 없어\n", id);
@@ -125,23 +103,13 @@ public class Main {
 
 				int id = Integer.parseInt(commandDiv[2]);
 
-				int foundIndex = -1;
-
-				fordata();
-//				for (int i = 0; i < articles.size(); i++) {
-//					Article article = articles.get(i);
-					if (article.id == id) {
-						foundIndex = id; //테스트후 수정(원래 i)
-//						break;
-//					}
-				}
+				int foundIndex = getArticleIndexById(id);
 
 				if (foundIndex == -1) {
 					System.out.printf("%d번 게시물은 없어\n", id);
 					continue;
 				}
-				
-				
+
 				articles.remove(foundIndex);
 				System.out.println(id + "번 글을 삭제했어");
 
@@ -156,11 +124,48 @@ public class Main {
 		sc.close();
 	}
 
-	private static void fordata() {
-//		System.out.println("fordata 동작함!");
-		for (int i = 0; i < articles.size(); i++) {
-			article = articles.get(i);
+	// TODO : 어떻게 통합하지??? : 해봄 됨.
+	//1. 함수를 새로 만든다
+	//2.한놈한테 반복되는 구간일을 몰아준다. : 난 이게 좋아 이걸로 시도함.
+	
+	//
+	
+	private static int getArticleIndexById(int id) {// 아티클의 인덱스를 구하는 함수
+
+		for (int i = 0; i < articles.size(); i++) {// 저장소 순회
+			Article article = articles.get(i); //하나씩 까서 article에 담음
+			if (article.id == id) { // article 에 담았는데 그게 id랑 같으면
+				return i; //인덱스를 리턴 //아래와의 유일한 차이
+			}
 		}
+		
+		
+		
+		return -1; //못찾으면 return -1
+	}
+
+	private static Article getArticleById(int id) {// 아티클의 아이디 번호를 구하는 함수
+
+//		for (int i = 0; i < articles.size(); i++) {// 저장소 순회
+//			Article article = articles.get(i);//하나씩 까서 article에 담음
+//			if (article.id == id) {// article 에 담았는데 그게 id랑 같으면
+//				return article; // 아티클을 반환
+//			}
+//		}
+		
+//		주석처리한 부분을 getArticleIndexById함수로 외주를 주자.
+		int index = getArticleIndexById(id); // getArticleIndexById로부터 인덱스를 얻습니다.
+
+	    if (index != -1) {
+	        return articles.get(index); // 아티클을 반환합니다.
+	    }
+		
+//		if(getArticleIndexById(id)!=-1) {
+//			return i.id;
+//		}
+		
+
+		return null;// 못찾으면 retrun null
 	}
 
 	private static void makeTestData() {
