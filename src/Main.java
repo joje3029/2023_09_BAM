@@ -31,18 +31,6 @@ public class Main {
 			if (command.equals("exit")) {
 				break;
 			}
-// 제목만 검색한것 코드를 포함하게 수정할 것.
-//			기존 코드
-//			if (command.equals("article list")) {
-//				if (articles.size() == 0) {
-//					System.out.println("게시글이 없습니다");
-//				} else {
-//					System.out.println("번호      /    제목     /    조회   ");
-//					for (int i = articles.size() - 1; i >= 0; i--) {
-//						Article article = articles.get(i);
-//						System.out.printf(" %4d     /   %5s    /      %4d  \n", article.id, article.title, article.hit);
-//					}
-//				}
 			
 			if (command.startsWith("article list")) {// contains로 했을때 기존처럼 일 잘함.
 				if (articles.size() == 0) {// 저장소에 아무것도 없을때
@@ -157,32 +145,51 @@ public class Main {
 //				우선 입력 받는데가 있어야겠지? -> write 응용
 				int id=memberId+1;
 				String memberRegDate = Util.getNow();
-				System.out.printf("아이디 : ");
-				String loginId = sc.nextLine();
+				String loginId =null;
 				
+				while(true) {
+					System.out.printf("아이디 : ");
+					loginId = sc.nextLine();
+					
 //				아이디가 같은지 체크 = members.loginId가 같아야하는거 => 있는지 없는지 유무만 확인
-				
-				int foundLoginId=getMemberById(loginId);
-				
-				if(foundLoginId == 1) {
-					System.out.println("사용할수 없는 아이디입니다.");
-					continue;
+					if(loginId.length()==0) {
+						System.out.println("아이디 입력해");
+						continue;
+					}
+					
+					int foundLoginId=getMemberById(loginId);
+					
+					if(foundLoginId == 1) {
+						System.out.println("이미 사용중인 아이디입니다.");
+						continue;
+					}
+					break;
 				}
 				
-				
-				System.out.printf("비밀번호: ");
-				String lginPw = sc.nextLine();
-				System.out.printf("비밀번호 확인 : ");
-				String checkLoginPw = sc.nextLine();
-				
-				//비밀번호랑 비밀번호 확인이 같으면 넘기고 아니면 안같다고 하고 명령어로 올리기
-				if(!lginPw.equals(checkLoginPw)){
-					System.out.println("비밀번호가 다릅니다. 회원가입을 다시해주세요.");
-					continue;
+				String name =null;
+				String lginPw =null;
+				while(true) {
+					System.out.printf("비밀번호: ");
+					lginPw = sc.nextLine();
+					System.out.printf("비밀번호 확인 : ");
+					String checkLoginPw = sc.nextLine();
+					
+					//비밀번호랑 비밀번호 확인이 같으면 넘기고 아니면 안같다고 하고 명령어로 올리기
+					if(!lginPw.equals(checkLoginPw)){
+						System.out.println("비밀번호가 다릅니다.");
+						continue;
+					}
+					System.out.printf("회원 이름: ");
+					name = sc.nextLine();
+					if(name.length()==0) {
+						System.out.println("아이디 입력해");
+						continue;
+					}
+					
+					
+					break;
 				}
 				
-				System.out.printf("회원 이름: ");
-				String name = sc.nextLine();
 				
 				
 				
@@ -206,6 +213,7 @@ public class Main {
 		sc.close();
 	}
 
+// member 순회
 	private static int getMemberById(String loginId) {
 		for (int i = 0; i < memebers.size(); i++) {// 저장소 순회
 			Member member = memebers.get(i); //하나씩 까서 article에 담음
