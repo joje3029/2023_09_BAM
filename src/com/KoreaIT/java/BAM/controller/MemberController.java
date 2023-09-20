@@ -1,9 +1,9 @@
 package com.KoreaIT.java.BAM.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-import com.KoreaIT.java.BAM.dto.Article;
 import com.KoreaIT.java.BAM.dto.Member;
 import com.KoreaIT.java.BAM.util.Util;
 
@@ -16,8 +16,8 @@ public class MemberController extends Controller {
 
 	int lastMemberId = 0;
 
-	public MemberController(List<Member> members, Scanner sc) {
-		this.members = members;
+	public MemberController(Scanner sc) {
+		this.members = new ArrayList<Member>();
 		this.sc = sc;
 	}
 
@@ -37,10 +37,6 @@ public class MemberController extends Controller {
 			break;
 		}
 	}
-
-	
-
-	
 
 	public void doJoin() {
 		int id = lastMemberId + 1;
@@ -110,7 +106,6 @@ public class MemberController extends Controller {
 	}
 	
 	private void dologin() {
-//		int id = lastMemberId + 1;
 		String regDate = Util.getNow();
 		String loginId = null;
 		String loginPw = null;
@@ -146,31 +141,18 @@ public class MemberController extends Controller {
 			
 
 	}
-	
 
-	private int isfindLoginPw(String loginPw) {	
-		for(int i = 0; i<members.size();i++) {
-			Member member = members.get(i);
-			if(member.loginPw.equals(loginPw)){
-				return i; 
-				}
-			}
-		return -1;
-		}
-	
-	private boolean isJoinableLoginId(String loginId) { // members의 logId를 찾으려는 것
+	private boolean isJoinableLoginId(String loginId) {
 		int index = getMemberIndexByLoginId(loginId);
 
 		if (index == -1) {
-			return true; // 기존에 없어. 
+			return true;
 		}
 
-		return false; //기존에 있어
+		return false;
 	}
-	
-	
 
-	private int getMemberIndexByLoginId(String loginId) { // 순회는 얘가 함.
+	private int getMemberIndexByLoginId(String loginId) {
 		int i = 0;
 		for (Member member : members) {
 			if (member.loginId.equals(loginId)) {
@@ -180,11 +162,22 @@ public class MemberController extends Controller {
 		return -1;
 	}
 	
+	private int isfindLoginPw(String loginPw) {	
+		for(int i = 0; i<members.size();i++) {
+			Member member = members.get(i);
+			if(member.loginPw.equals(loginPw)){
+				return i; 
+				}
+			}
+		return -1;
+		}
+
 	public void makeMemeberTestData() {
-		System.out.println("테스트를 위한 게시글 데이터 5개 생성 완료");
+		System.out.println("테스트를 위한 유저 데이터 3개 생성 완료");
 		members.add(new Member(1, Util.getNow(), Util.getNow(), "test1", "test1", "test1"));
 		members.add(new Member(1, Util.getNow(), Util.getNow(), "test1", "test1", "test1"));
 		members.add(new Member(1, Util.getNow(), Util.getNow(), "test1", "test1", "test1"));
+		
 	}
 
 }
