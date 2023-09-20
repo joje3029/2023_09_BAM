@@ -1,4 +1,4 @@
-package controller;
+package com.KoreaIT.java.BAM.controller;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,20 +7,47 @@ import java.util.Scanner;
 import com.KoreaIT.java.BAM.dto.Article;
 import com.KoreaIT.java.BAM.util.Util;
 
-public class ArticleController {
-	
+public class ArticleController extends Controller {
+
 	private List<Article> articles;
 	private Scanner sc;
+	private String actionMethodName;
+	private String command;
+
+	int lastArticleId = 5;
 
 	public ArticleController(List<Article> articles, Scanner sc) {
 		this.articles = articles;
 		this.sc = sc;
-		
 	}
 
-	int lastArticleId = 5;
-	
-	public void dolist(String command) {
+	public void doAction(String actionMethodName, String command) {
+		this.actionMethodName = actionMethodName;
+		this.command = command;
+
+		switch (actionMethodName) {
+		case "write":
+			doWrite();
+			break;
+		case "list":
+			showList();
+			break;
+		case "detail":
+			showDetail();
+			break;
+		case "modify":
+			doModify();
+			break;
+		case "delete":
+			doDelete();
+			break;
+		default:
+			System.out.println("그런 세부기능은 없어");
+			break;
+		}
+	}
+
+	public void showList() {
 		if (articles.size() == 0) {
 			System.out.println("게시글이 없습니다");
 			return;
@@ -54,10 +81,10 @@ public class ArticleController {
 			Article article = forPrintArticles.get(i);
 			System.out.printf(" %4d     /   %5s    /      %4d  \n", article.id, article.title, article.hit);
 		}
-		
+
 	}
 
-	public void dowrite() {
+	public void doWrite() {
 		int id = lastArticleId + 1;
 		String regDate = Util.getNow();
 		System.out.printf("제목 : ");
@@ -67,11 +94,13 @@ public class ArticleController {
 
 		Article article = new Article(id, regDate, regDate, title, body);
 		articles.add(article);
+
 		System.out.printf("%d번글이 생성되었습니다.\n", id);
 		lastArticleId++;
+
 	}
 
-	public void detail(String command) {
+	public void showDetail() {
 		String[] commandDiv = command.split(" ");
 
 		int id = Integer.parseInt(commandDiv[2]);
@@ -92,10 +121,9 @@ public class ArticleController {
 		System.out.println("내용 : " + foundArticle.body);
 		System.out.println("조회수 : " + foundArticle.hit);
 
-		
 	}
 
-	public void modify(String command) {
+	public void doModify() {
 		String[] commandDiv = command.split(" ");
 
 		int id = Integer.parseInt(commandDiv[2]);
@@ -116,10 +144,10 @@ public class ArticleController {
 		foundArticle.title = newTitle;
 		foundArticle.body = newBody;
 		foundArticle.updateDate = updateDate;
+
 	}
 
-	public void delete(String command) {
-
+	public void doDelete() {
 		String[] commandDiv = command.split(" ");
 
 		int id = Integer.parseInt(commandDiv[2]);
@@ -133,40 +161,39 @@ public class ArticleController {
 
 		articles.remove(foundIndex);
 		System.out.println(id + "번 글을 삭제했어");
+
 	}
 
+	private int getArticleIndexById(int id) {
 
-private int getArticleIndexById(int id) {
-
-	for (int i = 0; i < articles.size(); i++) {
-		Article article = articles.get(i);
-		if (article.id == id) {
-			return i;
+		for (int i = 0; i < articles.size(); i++) {
+			Article article = articles.get(i);
+			if (article.id == id) {
+				return i;
+			}
 		}
+
+		return -1;
 	}
 
-	return -1;
-}
+	private Article getArticleById(int id) {
 
-private Article getArticleById(int id) {
+		int index = getArticleIndexById(id);
 
-	int index = getArticleIndexById(id);
+		if (index != -1) {
+			return articles.get(index);
+		}
 
-	if (index != -1) {
-		return articles.get(index);
+		return null;
 	}
 
-	return null;
-}
-
-public void makeTestData() {
-	System.out.println("테스트를 위한 데이터 5개 생성 완료");
-	articles.add(new Article(1, Util.getNow(), Util.getNow(), "제목1", "내용1", 11));
-	articles.add(new Article(2, Util.getNow(), Util.getNow(), "제목2", "내용2", 22));
-	articles.add(new Article(3, Util.getNow(), Util.getNow(), "제목3", "내용3", 33));
-	articles.add(new Article(4, Util.getNow(), Util.getNow(), "제목11", "내용11", 44));
-	articles.add(new Article(5, Util.getNow(), Util.getNow(), "제목21", "내용21", 55));
-	
-}
+	public void makeTestData() {
+		System.out.println("테스트를 위한 게시글 데이터 5개 생성 완료");
+		articles.add(new Article(1, Util.getNow(), Util.getNow(), "제목1", "내용1", 11));
+		articles.add(new Article(2, Util.getNow(), Util.getNow(), "제목2", "내용2", 22));
+		articles.add(new Article(3, Util.getNow(), Util.getNow(), "제목3", "내용3", 33));
+		articles.add(new Article(4, Util.getNow(), Util.getNow(), "제목11", "내용11", 44));
+		articles.add(new Article(5, Util.getNow(), Util.getNow(), "제목21", "내용21", 55));
+	}
 
 }

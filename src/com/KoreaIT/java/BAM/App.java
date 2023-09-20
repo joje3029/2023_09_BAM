@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+import com.KoreaIT.java.BAM.controller.ArticleController;
+import com.KoreaIT.java.BAM.controller.Controller;
+import com.KoreaIT.java.BAM.controller.MemberController;
 import com.KoreaIT.java.BAM.dto.Article;
 import com.KoreaIT.java.BAM.dto.Member;
-
-import controller.ArticleController;
-import controller.MemberController;
 
 public class App {
 
@@ -23,13 +23,15 @@ public class App {
 	public void start() {
 		System.out.println("== 프로그램 시작 ==");
 
-
 		Scanner sc = new Scanner(System.in);
 
-		MemberController memberController = new MemberController(members,sc);
-		ArticleController articleController = new ArticleController(articles,sc);
-		
+		MemberController memberController = new MemberController(members, sc);
+		ArticleController articleController = new ArticleController(articles, sc);
+
 		articleController.makeTestData();
+		memberController.makeMemeberTestData();
+
+		Controller controller;
 
 		while (true) {
 
@@ -40,33 +42,40 @@ public class App {
 				System.out.println("너 명령어 입력 안했어");
 				continue;
 			}
+
 			if (command.equals("exit")) {
 				break;
 			}
-			if (command.equals("member join")) {
-				memberController.doJoin();
-			}
-			else if (command.startsWith("article list")) {
-				articleController.dolist(command);
-			} else if (command.equals("article write")) {
-				articleController.dowrite();
-			} else if (command.startsWith("article detail")) {
-				articleController.detail(command);
-			} else if (command.startsWith("article modify")) {
-				articleController.modify(command);
-			} else if (command.startsWith("article delete")) {
-				articleController.delete(command);
-			} else {
-				System.out.println("존재하지 않는 명령어입니다");
+
+			String[] commandDiv = command.split(" "); // article list // member join // article list 제
+			// article write // adfg
+
+			String controllerName = commandDiv[0];
+			if (commandDiv.length == 1) {
+				System.out.println("명령어 확인해");
 				continue;
 			}
+			
+			String actionMethodName = commandDiv[1];
+
+
+			controller = null;
+
+			if (controllerName.equals("article")) {
+				controller = articleController;
+			} else if (controllerName.equals("member")) {
+				controller = memberController;
+			} else {
+				System.out.println("존재하지 않는 기능이야");
+				continue;
+			}
+
+			controller.doAction(actionMethodName, command);
+
 		}
 
 		System.out.println("== 프로그램 종료 ==");
 
 		sc.close();
-
 	}
-	
-	
 }
