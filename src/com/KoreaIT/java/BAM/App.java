@@ -21,7 +21,7 @@ public class App {
 		ArticleController articleController = new ArticleController(sc);
 
 		articleController.makeTestData();
-		memberController.makeMemeberTestData();
+		memberController.makeTestData();
 
 		Controller controller;
 
