@@ -47,6 +47,7 @@ public class ArticleController extends Controller {
 		}
 	}
 
+
 	public void showList() {
 		if (articles.size() == 0) {
 			System.out.println("게시글이 없습니다");
@@ -79,18 +80,12 @@ public class ArticleController extends Controller {
 		System.out.println("번호      /    제목     /    작성자     /    조회   ");
 		for (int i = forPrintArticles.size() - 1; i >= 0; i--) {
 			Article article = forPrintArticles.get(i);
-			System.out.printf(" %4d     /   %5s    /      %4d  \n", article.id, article.title, article.loginId, article.hit);
+			System.out.printf(" %4d     /   %5s     /   %5s    /      %4d  \n", article.id, article.title, article.loginId, article.hit);
 		}
 
 	}
 
 	public void doWrite() {
-//		로그인 한 상태에서만 글 작성이 가능하도록
-		if(isLogined ==false) {
-			System.out.println("로그인 안해서 글 못씀 ");
-			return;
-		}
-		
 		int id = lastArticleId + 1;
 		String regDate = Util.getNow();
 		System.out.printf("제목 : ");
@@ -98,7 +93,7 @@ public class ArticleController extends Controller {
 		System.out.printf("내용 : ");
 		String body = sc.nextLine();
 
-		Article article = new Article(id, regDate, regDate, title, body, loginedMember.loginId);
+		Article article = new Article(id, regDate, regDate,loginedMember.id, title, body,loginedMember.loginId);
 		articles.add(article);
 
 		System.out.printf("%d번글이 생성되었습니다.\n", id);
@@ -107,9 +102,6 @@ public class ArticleController extends Controller {
 	}
 
 	public void showDetail() {
-		
-		
-		
 		String[] commandDiv = command.split(" ");
 
 		int id = Integer.parseInt(commandDiv[2]);
@@ -122,7 +114,7 @@ public class ArticleController extends Controller {
 		}
 
 		foundArticle.hit++;
-
+		
 		System.out.println("번호 : " + foundArticle.id);
 		System.out.println("작성날짜 : " + foundArticle.regDate);
 		System.out.println("수정날짜 : " + foundArticle.updateDate);
@@ -130,18 +122,11 @@ public class ArticleController extends Controller {
 		System.out.println("내용 : " + foundArticle.body);
 		System.out.println("작성자 : " + foundArticle.loginId);
 		System.out.println("조회수 : " + foundArticle.hit);
+		
 
 	}
 
 	public void doModify() {
-		
-		if(isLogined ==false) {
-			System.out.println("로그인 안해서 글수정 못함");
-			
-			return;
-		}
-		
-		
 		String[] commandDiv = command.split(" ");
 
 		int id = Integer.parseInt(commandDiv[2]);
@@ -152,8 +137,9 @@ public class ArticleController extends Controller {
 			System.out.printf("%d번 게시물은 없어\n", id);
 			return;
 		}
-		if(!loginedMember.loginId.equals(foundArticle.loginId)) {
-			System.out.println("니글 아님");
+		
+		if(foundArticle.memberId!=loginedMember.id) {
+			System.out.println("니꺼아님 수정 불가");
 			return;
 		}
 
@@ -170,12 +156,6 @@ public class ArticleController extends Controller {
 	}
 
 	public void doDelete() {
-		
-		if(isLogined ==false) {
-			System.out.println("로그인 안해서 글 삭제 못함");
-			return;
-		}
-		
 		String[] commandDiv = command.split(" ");
 
 		int id = Integer.parseInt(commandDiv[2]);
@@ -186,12 +166,13 @@ public class ArticleController extends Controller {
 			System.out.printf("%d번 게시물은 없어\n", id);
 			return;
 		}
-		Article article =getArticleById(id);
-		if(!loginedMember.equals(article.loginId)) {
-			System.out.println("님 글 주인 아님. 삭제 못함");
+		
+		Article article=articles.get(foundIndex);
+		
+		if(article.memberId!=loginedMember.id) {
+			System.out.println("니꺼아님 삭제 불가");
 			return;
 		}
-		
 
 		articles.remove(foundIndex);
 		System.out.println(id + "번 글을 삭제했어");
@@ -205,7 +186,6 @@ public class ArticleController extends Controller {
 			if (article.id == id) {
 				return i;
 			}
-			i++;
 		}
 
 		return -1;
@@ -224,11 +204,11 @@ public class ArticleController extends Controller {
 
 	public void makeTestData() {
 		System.out.println("테스트를 위한 게시글 데이터 5개 생성 완료");
-		articles.add(new Article(1, Util.getNow(), Util.getNow(), "제목1", "내용1", 11,"회원1"));
-		articles.add(new Article(2, Util.getNow(), Util.getNow(), "제목2", "내용2", 22,"회원1"));
-		articles.add(new Article(3, Util.getNow(), Util.getNow(), "제목3", "내용3", 33,"회원2"));
-		articles.add(new Article(4, Util.getNow(), Util.getNow(), "제목11", "내용11", 44,"회원2"));
-		articles.add(new Article(5, Util.getNow(), Util.getNow(), "제목21", "내용21", 55,"회원3"));
+		articles.add(new Article(1, Util.getNow(), Util.getNow(), 1 ,"제목1", "내용1", 11,"test1"));
+		articles.add(new Article(2, Util.getNow(), Util.getNow(), 1 , "제목2", "내용2", 22,"test1"));
+		articles.add(new Article(3, Util.getNow(), Util.getNow(), 2 ,"제목3", "내용3", 33,"test2"));
+		articles.add(new Article(4, Util.getNow(), Util.getNow(), 2 ,"제목11", "내용11", 44,"test2"));
+		articles.add(new Article(5, Util.getNow(), Util.getNow(), 3 ,"제목21", "내용21", 55,"test3"));
 	}
 
 }

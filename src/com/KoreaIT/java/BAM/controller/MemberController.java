@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-import com.KoreaIT.java.BAM.dto.Article;
 import com.KoreaIT.java.BAM.dto.Member;
 import com.KoreaIT.java.BAM.util.Util;
 
@@ -14,7 +13,9 @@ public class MemberController extends Controller {
 	private Scanner sc;
 	private String actionMethodName;
 	private String command;
-	
+
+	boolean isLogined = false;
+
 	int lastMemberId = 3;
 
 	public MemberController(Scanner sc) {
@@ -37,7 +38,7 @@ public class MemberController extends Controller {
 			doLogout();
 			break;
 		case "whoami":
-			showWhoami();
+			showWhoAmI();
 			break;
 		default:
 			System.out.println("그런 세부기능은 없어");
@@ -45,27 +46,21 @@ public class MemberController extends Controller {
 		}
 	}
 
-	
-	private void showWhoami() {
-		if(isLogined == false) {
-			System.out.println("로그인 안함. 나 아무도 아님");
-			return;
-		}
-		
-		System.out.println("회원 아이디 : "+ loginedMember.loginId);
-		System.out.println("회원 이름 : "+loginedMember.name);
+	private void showWhoAmI() {
+		System.out.println("== 현재 로그인 한 회원의 정보==");
+		System.out.println("가입일 : " + loginedMember.regDate);
+		System.out.println("로그인 아이디 : " + loginedMember.loginId);
+		System.out.println("이름 : " + loginedMember.name);
+	}
+
+	private void doLogout() {
+		isLogined = false;
+		loginedMember = null;
+
+		System.out.println("로그아웃 함");
 	}
 
 	private void doLogin() {
-//		if(isLogined == true) {
-//			System.out.println("이미 누가 로그인 했다");
-//			return;
-//		}
-
-		if (loginedMember != null) {
-			System.out.println("이미 누가 로그인 했다");
-			return;
-		}
 		System.out.printf("로그인 아이디 : ");
 		String loginId = sc.nextLine();
 		System.out.printf("로그인 비밀번호 : ");
@@ -88,15 +83,6 @@ public class MemberController extends Controller {
 		System.out.println("로그인 성공!");
 	}
 
-	private void doLogout() {
-		if(isLogined==false) {
-			System.out.println("로그인도 안함");
-			return;
-		}
-		System.out.println("로그아웃 됨");
-		isLogined=false;
-	}
-	
 	public void doJoin() {
 		int id = lastMemberId + 1;
 		String regDate = Util.getNow();
@@ -163,8 +149,6 @@ public class MemberController extends Controller {
 		lastMemberId++;
 
 	}
-	
-	
 
 	private Member getMemberByLoginId(String loginId) {
 		int index = getMemberIndexByLoginId(loginId);
