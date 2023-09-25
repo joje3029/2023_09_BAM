@@ -9,9 +9,8 @@ public abstract class Controller {
 	public static boolean isLogined() {
 		return loginedMember != null;
 	}
-	
+
 	public abstract void doAction(String actionMethodName, String command);
-	
 
 	public void makeTestData() {
 

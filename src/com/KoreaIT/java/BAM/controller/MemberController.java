@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+import com.KoreaIT.java.BAM.container.Container;
 import com.KoreaIT.java.BAM.dto.Member;
 import com.KoreaIT.java.BAM.util.Util;
 
@@ -19,7 +20,7 @@ public class MemberController extends Controller {
 	int lastMemberId = 3;
 
 	public MemberController(Scanner sc) {
-		this.members = new ArrayList<Member>();
+		this.members = Container.memberService.members;
 		this.sc = sc;
 	}
 
@@ -47,6 +48,7 @@ public class MemberController extends Controller {
 	}
 
 	private void showWhoAmI() {
+
 		System.out.println("== 현재 로그인 한 회원의 정보==");
 		System.out.println("가입일 : " + loginedMember.regDate);
 		System.out.println("로그인 아이디 : " + loginedMember.loginId);
@@ -54,6 +56,7 @@ public class MemberController extends Controller {
 	}
 
 	private void doLogout() {
+
 		isLogined = false;
 		loginedMember = null;
 
@@ -61,11 +64,29 @@ public class MemberController extends Controller {
 	}
 
 	private void doLogin() {
-		System.out.printf("로그인 아이디 : ");
-		String loginId = sc.nextLine();
-		System.out.printf("로그인 비밀번호 : ");
-		String loginPw = sc.nextLine();
-
+		String loginId =null;
+		String loginPw =null;
+		
+		while(true) {
+			System.out.printf("로그인 아이디 : ");
+			loginId = sc.nextLine().trim();
+			if(loginId.length()==0) {
+				System.out.println("아이디 입력 안함");
+				continue;
+			}
+			break;
+		}
+		
+		while(true) {
+			System.out.printf("로그인 비밀번호 : ");
+			loginPw = sc.nextLine().trim();
+			if(loginPw.length() == 0) {
+				System.out.println("비밀번호 입력 안함");
+				continue;
+			}
+			break;
+			
+		}
 		Member member = getMemberByLoginId(loginId);
 
 		if (member == null) {
@@ -84,6 +105,7 @@ public class MemberController extends Controller {
 	}
 
 	public void doJoin() {
+
 		int id = lastMemberId + 1;
 		String regDate = Util.getNow();
 		String loginId = null;
