@@ -7,7 +7,6 @@ import java.util.Scanner;
 import com.KoreaIT.java.BAM.container.Container;
 import com.KoreaIT.java.BAM.dto.Article;
 import com.KoreaIT.java.BAM.dto.Member;
-import com.KoreaIT.java.BAM.service.ArticleService;
 import com.KoreaIT.java.BAM.util.Util;
 
 public class ArticleController extends Controller {
@@ -17,10 +16,8 @@ public class ArticleController extends Controller {
 	private String actionMethodName;
 	private String command;
 
-	int lastArticleId = 5;
-
 	public ArticleController(Scanner sc) {
-		this.articles = Container.articleService.articles;
+		this.articles = Container.articleDao.articles;
 		this.sc = sc;
 	}
 
@@ -79,22 +76,21 @@ public class ArticleController extends Controller {
 
 		}
 
-		String writerName = null;
-		List<Member> members = Container.memberService.members; //여기서 데꼬 왔네. members 리스트를 
-		
-		
+		List<Member> members = Container.memberDao.members;
 
 		System.out.println("번호      /    제목      /    작성자       /    조회   ");
-		for (int i = forPrintArticles.size() - 1; i >= 0; i--) {//forPrintAritcles = articles. articles 순회
-			Article article = forPrintArticles.get(i); //i번 인덱스를 꺼내서 article에 넣음
-			int j=0;
-			for(Member member : members) {
-				if(member.id == article.memberId) {
+		for (int i = forPrintArticles.size() - 1; i >= 0; i--) {
+
+			Article article = forPrintArticles.get(i);
+			String writerName = null;
+
+			for (Member member : members) {
+				if (article.memberId == member.id) {
 					writerName = member.name;
 					break;
 				}
-				j++;
 			}
+
 			System.out.printf(" %4d     /   %5s    /      %4s      /      %4d  \n", article.id, article.title,
 					writerName, article.hit);
 		}
@@ -103,7 +99,7 @@ public class ArticleController extends Controller {
 
 	public void doWrite() {
 
-		int id = lastArticleId + 1;
+		int id = Container.articleDao.setNewId();
 		String regDate = Util.getNow();
 		System.out.printf("제목 : ");
 		String title = sc.nextLine();
@@ -111,10 +107,9 @@ public class ArticleController extends Controller {
 		String body = sc.nextLine();
 
 		Article article = new Article(id, regDate, regDate, loginedMember.id, title, body);
-		articles.add(article);
+		Container.articleDao.add(article);
 
 		System.out.printf("%d번글이 생성되었습니다.\n", id);
-		lastArticleId++;
 
 	}
 
@@ -129,18 +124,16 @@ public class ArticleController extends Controller {
 			System.out.printf("%d번 게시물은 없어\n", id);
 			return;
 		}
-		
+
+		List<Member> members = Container.memberDao.members;
+
 		String writerName = null;
-		
-		List<Member> members = Container.memberService.members;; //container연결 -> service
-		
-		int j=0;
-		for(Member member : members) {
-			if(member.id == foundArticle.memberId) {
+
+		for (Member member : members) {
+			if (foundArticle.memberId == member.id) {
 				writerName = member.name;
 				break;
 			}
-			j++;
 		}
 
 		foundArticle.hit++;
@@ -230,11 +223,11 @@ public class ArticleController extends Controller {
 
 	public void makeTestData() {
 		System.out.println("테스트를 위한 게시글 데이터 5개 생성 완료");
-		articles.add(new Article(1, Util.getNow(), Util.getNow(), 1, "제목1", "내용1", 11));
-		articles.add(new Article(2, Util.getNow(), Util.getNow(), 2, "제목2", "내용2", 22));
-		articles.add(new Article(3, Util.getNow(), Util.getNow(), 3, "제목3", "내용3", 33));
-		articles.add(new Article(4, Util.getNow(), Util.getNow(), 1, "제목11", "내용11", 44));
-		articles.add(new Article(5, Util.getNow(), Util.getNow(), 3, "제목21", "내용21", 55));
+		Container.articleDao.add(new Article(1, Util.getNow(), Util.getNow(), 1, "제목1", "내용1", 11));
+		Container.articleDao.add(new Article(2, Util.getNow(), Util.getNow(), 2, "제목2", "내용2", 22));
+		Container.articleDao.add(new Article(3, Util.getNow(), Util.getNow(), 3, "제목3", "내용3", 33));
+		Container.articleDao.add(new Article(4, Util.getNow(), Util.getNow(), 1, "제목11", "내용11", 44));
+		Container.articleDao.add(new Article(5, Util.getNow(), Util.getNow(), 3, "제목21", "내용21", 55));
 	}
 
 }

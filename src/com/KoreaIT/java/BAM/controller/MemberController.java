@@ -1,6 +1,5 @@
 package com.KoreaIT.java.BAM.controller;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -17,10 +16,8 @@ public class MemberController extends Controller {
 
 	boolean isLogined = false;
 
-	int lastMemberId = 3;
-
 	public MemberController(Scanner sc) {
-		this.members = Container.memberService.members;
+		this.members = Container.memberDao.members;
 		this.sc = sc;
 	}
 
@@ -64,29 +61,32 @@ public class MemberController extends Controller {
 	}
 
 	private void doLogin() {
-		String loginId =null;
-		String loginPw =null;
-		
-		while(true) {
+
+		String loginId = null;
+		String loginPw = null;
+
+		while (true) {
 			System.out.printf("로그인 아이디 : ");
-			loginId = sc.nextLine().trim();
-			if(loginId.length()==0) {
-				System.out.println("아이디 입력 안함");
+			loginId = sc.nextLine();
+
+			if (loginId.length() == 0) {
+				System.out.println("아이디 입력해줘");
 				continue;
 			}
 			break;
 		}
 		
-		while(true) {
+		while (true) {
 			System.out.printf("로그인 비밀번호 : ");
-			loginPw = sc.nextLine().trim();
-			if(loginPw.length() == 0) {
-				System.out.println("비밀번호 입력 안함");
+			loginPw = sc.nextLine();
+
+			if (loginPw.length() == 0) {
+				System.out.println("비밀번호 입력해줘");
 				continue;
 			}
 			break;
-			
 		}
+
 		Member member = getMemberByLoginId(loginId);
 
 		if (member == null) {
@@ -106,7 +106,7 @@ public class MemberController extends Controller {
 
 	public void doJoin() {
 
-		int id = lastMemberId + 1;
+		int id = Container.memberDao.setNewId();
 		String regDate = Util.getNow();
 		String loginId = null;
 		String loginPw = null;
@@ -168,7 +168,7 @@ public class MemberController extends Controller {
 		members.add(member);
 
 		System.out.printf("%d번 회원이 가입되었습니다.\n", id);
-		lastMemberId++;
+		Container.memberDao.add(member);;
 
 	}
 
